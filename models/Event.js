@@ -8,8 +8,7 @@ const eventSchema = mongoose.Schema({
     },
     comune: {
         type: String,
-        required: true,
-        unique: true,
+        required: true
     },
     titoloEvento:{
         type: String,

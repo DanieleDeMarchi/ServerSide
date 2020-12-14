@@ -50,20 +50,24 @@ router.get('/:eventId', async function(req, res, next) {
 */
 router.post('/', auth, async function(req, res, next) {
     
-    const car = new Car({
+    if(req.user.ruolo != "organizzatore" ){
+        res.status(401).send({error: 'Utente non organizzatore'})
+        next();
+    }
+    const evento = new Evento({
         ...req.body,    //copia tutto req.body
-        proprietario: req.user._id //aggiungi proprietario
+        organizzatore: req.user._id //aggiungi proprietario
     })
     
-    console.log(car)
+    console.log(evento)
     
     try {
-        await car.save()
-        res.status(201).send(car)
+        await evento.save()
+        res.status(201).send(evento)
     } catch (err) {
         if (err.name === 'MongoError' && err.code === 11000) {
             // Duplicate targa
-            return res.status(409).send({ error: 'Car already exist!' });
+            return res.status(409).send({ error: 'already exist!' });
         }
         res.status(400).send(err)
     }
@@ -75,20 +79,22 @@ router.post('/', auth, async function(req, res, next) {
 *  Solo utente "organizzazione"
 */
 router.delete('/:eventId', auth, async function(req, res, next) {
+
+    if(req.user.ruolo != "organizzatore" ){
+        res.status(401).send({error: 'Utente non organizzatore'})
+        next();
+    }
+
+    const evento = await Event.findOne({ _id: req.params.eventId, organizzatore: req.user._id })    
+    if (!evento) {
+        return res.status(404).send()
+    }
     
-    Car.findByIdAndRemove(req.params.carid, async function (err, deleted) { 
+    Evento.findByIdAndRemove(req.params.eventId, async function (err, deleted) { 
         if (err){ 
             res.status(500).send(err) 
         } 
         else{ 
-            await AutoInVendita.findOneAndRemove({auto: req.params.carid})
-            await StoricoTrattative.findOneAndRemove({auto: req.params.carid}) 
-            
-            const device = await Device.findOne({car: req.params.carid})
-            if(device){
-                device.car = undefined
-                await device.save()
-            }
             res.status(200).send({deletedCar: deleted}) 
         } 
     });
