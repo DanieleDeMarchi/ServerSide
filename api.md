@@ -1,7 +1,5 @@
 ## **Eventi**
 
----
-
 ### **Crea un nuovo evento**
 
 _Aggiungi un evento al database_
