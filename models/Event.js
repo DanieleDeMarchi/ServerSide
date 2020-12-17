@@ -4,7 +4,7 @@ const eventSchema = mongoose.Schema({
     organizzatore: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true
+        required: false
     },
     comune: {
         type: String,
@@ -24,6 +24,6 @@ const eventSchema = mongoose.Schema({
     }
 })
 
-const Car = mongoose.model('Event', eventSchema)
+const Event = mongoose.model('Event', eventSchema)
 
-module.exports = Car
+module.exports = Event

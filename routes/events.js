@@ -12,15 +12,8 @@ var router = express.Router();
 /** GET lista tutti eventi, eventualmente filtrati per comune
 * Non necessario login
 */
-router.get('/eventList/:comune',  async function(req, res, next) {
-    var eventi = null
-    if(req.params.comune){
-        eventi = await Event.findAll({comune: req.params.comune})
-    }
-    else{
-        eventi = await Event.findAll({})
-    }
-    
+router.get('/eventList',  async function(req, res, next) {
+    const eventi = await Event.find()    
     res.send(eventi)  
 });
 
@@ -46,18 +39,30 @@ router.get('/:eventId', async function(req, res, next) {
 
 
 /** ADD Event
-*  Solo utente "organizzazione"
+*  Solo utente "organizzazione" (vincolo tolto per il momento)
 */
-router.post('/', auth, async function(req, res, next) {
+router.post('/', async function(req, res, next) {
     
+    /*
     if(req.user.ruolo != "organizzatore" ){
         res.status(401).send({error: 'Utente non organizzatore'})
         next();
     }
+    
+    
     const evento = new Evento({
         ...req.body,    //copia tutto req.body
         organizzatore: req.user._id //aggiungi proprietario
     })
+    */
+    const data = toDate(req.body.data)
+    const evento = new Event({
+        comune: req.body.comune,
+        titoloEvento: req.body.titoloEvento,
+        descrizione: req.body.descrizione,
+        data: data
+    })
+    
     
     console.log(evento)
     
@@ -76,16 +81,19 @@ router.post('/', auth, async function(req, res, next) {
 
 
 /** DELETE Event
-*  Solo utente "organizzazione"
+*  Solo utente "organizzazione"  (vincolo tolto per il momento)
 */
-router.delete('/:eventId', auth, async function(req, res, next) {
-
+router.delete('/:eventId', async function(req, res, next) {
+    
+    
+    /*
     if(req.user.ruolo != "organizzatore" ){
         res.status(401).send({error: 'Utente non organizzatore'})
         next();
     }
-
-    const evento = await Event.findOne({ _id: req.params.eventId, organizzatore: req.user._id })    
+    */
+    
+    const evento = await Event.findOne({ _id: req.params.eventId })    
     if (!evento) {
         return res.status(404).send()
     }
@@ -99,5 +107,15 @@ router.delete('/:eventId', auth, async function(req, res, next) {
         } 
     });
 });
+
+
+const toDate = (dateStr) => {
+    const [year, month, day] = dateStr.split("-")
+    console.log(year, month - 1, day)
+    const date = new Date(year, month - 1 , day)
+    const userTimezoneOffset = date.getTimezoneOffset() * 60000;
+    return new Date(date - userTimezoneOffset);
+}
+
 
 module.exports = router;
