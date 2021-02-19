@@ -14,7 +14,29 @@ var router = express.Router();
 */
 router.get('/eventList',  async function(req, res, next) {
     const eventi = await Event.find()    
-    res.send(eventi)  
+    res.send(eventi)
+});
+
+
+/** GET lista tutti eventi, eventualmente filtrati per comune
+* Non necessario login
+*/
+router.get('/eventList/:page',  async function(req, res, next) {
+    const per_page = parseInt (req.query.per_page ? req.query.per_page : 10 );
+    const page = req.params.page || 1; // Page
+
+    try {
+        const eventi = await Event.find()
+            .skip((per_page * page) - per_page)
+            .limit(per_page);
+
+        res.send(eventi)
+    }
+    catch (e) {
+        console.log(e)
+        res.status(500).send()
+    }
+    
 });
 
 
@@ -58,8 +80,12 @@ router.post('/', async function(req, res, next) {
     const data = toDate(req.body.data)
     const evento = new Event({
         comune: req.body.comune,
+        indirizzo: req.body.indirizzo,
         titoloEvento: req.body.titoloEvento,
         descrizione: req.body.descrizione,
+        info_url: req.body.info_url ? req.body.info_url : NULL,
+        image_url: req.body.image_url ? req.body.image_url : NULL,
+        categoria: req.body.categoria,
         data: data
     })
     
@@ -98,12 +124,12 @@ router.delete('/:eventId', async function(req, res, next) {
         return res.status(404).send()
     }
     
-    Evento.findByIdAndRemove(req.params.eventId, async function (err, deleted) { 
+    Event.findByIdAndRemove(req.params.eventId, async function (err, deleted) { 
         if (err){ 
             res.status(500).send(err) 
         } 
         else{ 
-            res.status(200).send({deletedCar: deleted}) 
+            res.status(200).send({deleted}) 
         } 
     });
 });
