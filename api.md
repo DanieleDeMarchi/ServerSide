@@ -31,15 +31,14 @@ _Aggiungi un evento al database_
   }
   ```
 
-  **Required:** comune, indirizzo, titoloEvento, categoria (se non specificata viene messa categoria `GENERIC`), data.
+  **Required:** comune, indirizzo, titoloEvento, categoria, data.
 
   **Opional:** image_url, info_url, descrizione.
 
   <br />
 
   - url dev'essere completo, anche con http/https .
-  - categorie ammesse: `'SPORT', 'MUSICA', 'TEATRO', 'GENERICO'` .
-  - la data dev'essere in formato `YYYY-MM-DD` .
+  - la data dev'essere un unixTimestamp in millisecondi .
 
   Orario non ancora aggiunto (problemi con timezone)
   <br />
@@ -56,32 +55,35 @@ _Aggiungi un evento al database_
 
 - **Sample Call:**
 
-esemio in dart
+Esemio in dart.
+Inserisce un evento con data = timestamp attuale.
+Se chiamata va a buon fine stampa 201 e l'evento appena creato in formato json.
 
 ```javascript
-var headers = {
-  'Content-Type': 'application/json'
-};
-var request = http.Request('POST', Uri.parse('localhost:3001/events'));
-request.body = `{
-                    "comune": "Udine",
+
+  var headers = {'Content-Type': 'application/json'};
+  var request = http.Request(
+      'POST', Uri.parse('http://< herokuAddress >/events'));
+  request.body = '''{
+                    "comune": "Trieste",
                     "indirizzo": "Via Rovigno, 14",
                     "info_url": "https://www.google.com/",
                     "image_url": "https://image.freepik.com/free-vector/event-poster_23-2147514870.jpg",
                     "categoria": "sport",
                     "titoloEvento": "Evento prova",
                     "descrizione": "evento di prova per testare inserimento",
-                    "data": "2021-02-18"
-                  }`;
-request.headers.addAll(headers);
+                    "data": "${DateTime.now().millisecondsSinceEpoch}"
+                  }''';
+  request.headers.addAll(headers);
 
-http.StreamedResponse response = await request.send();
+  http.StreamedResponse response = await request.send();
 
-if (response.statusCode == 200) {
-  print(await response.stream.bytesToString());
-}
-else {
-  print(response.reasonPhrase);
+  if (response.statusCode == 201) {
+    print(response.statusCode);
+    print(await response.stream.bytesToString());
+  } else {
+    print(response.reasonPhrase);
+  }
 }
 
 

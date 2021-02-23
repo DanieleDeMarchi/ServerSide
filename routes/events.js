@@ -77,7 +77,9 @@ router.post('/', async function(req, res, next) {
         organizzatore: req.user._id //aggiungi proprietario
     })
     */
-    const data = toDate(req.body.data)
+    const data = new Date(parseInt(req.body.data))
+    console.log(data)
+    
     const evento = new Event({
         comune: req.body.comune,
         indirizzo: req.body.indirizzo,
@@ -91,7 +93,7 @@ router.post('/', async function(req, res, next) {
     
     
     console.log(evento)
-    
+
     try {
         await evento.save()
         res.status(201).send(evento)
@@ -102,7 +104,6 @@ router.post('/', async function(req, res, next) {
         }
         res.status(400).send(err)
     }
-    
 });
 
 

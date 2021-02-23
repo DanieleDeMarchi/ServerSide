@@ -16,8 +16,8 @@ const eventSchema = mongoose.Schema({
     },
     categoria:{
         type: String,
-        enum: ['SPORT', 'MUSICA', 'TEATRO', 'GENERICO'],
-        default: 'GENERICO',
+        //enum: ['SPORT', 'MUSICA', 'TEATRO', 'GENERICO'],
+        //default: 'GENERICO',
         required: true
     },
     comune:{
@@ -40,6 +40,12 @@ const eventSchema = mongoose.Schema({
     },
     civicPoints:{
         type: Number
+    },
+    statoEvento:{
+        type: String,
+        enum: ['IN_ATTESA', 'CONFERMATO', 'ANNULLATO', 'ORGANIZZATO'],
+        default: 'ORGANIZZATO',
+        required: true
     }
 })
 
