@@ -1,8 +1,10 @@
 var express = require('express');
 const Event = require('../models/Event')
-
 const auth = require('../middleware/auth')
+const fileUploader = require ('../helpers/file_uploader')
+const multerImage = require ('../helpers/multer_image')
 var router = express.Router();
+
 
 /************
 * Router per gestione eventi
@@ -79,7 +81,7 @@ router.post('/', async function(req, res, next) {
     */
     const data = new Date(parseInt(req.body.data))
     console.log(data)
-    
+
     const evento = new Event({
         comune: req.body.comune,
         indirizzo: req.body.indirizzo,
@@ -105,6 +107,36 @@ router.post('/', async function(req, res, next) {
         res.status(400).send(err)
     }
 });
+
+const test = async(req, res, next) => {
+    console.log("test"); 
+    next()
+}
+/** ADD event image from file upload
+*  Solo utente "organizzazione" (vincolo tolto per il momento)
+*/
+router.post('/upload/eventImage', multerImage.single('eventImage'), async function(req, res, next) {
+
+    if(!req.file) {
+        res.status(400).send("Error: No files found")
+    } else {
+        console.log(req.file)
+        try {
+            const myFile = req.file
+            const imageUrl = await fileUploader(myFile)
+            res
+              .status(200)
+              .json({
+                message: "Upload was successful",
+                data: imageUrl
+              })
+        } catch (error) {
+                console.log(error)
+                next(error)
+        }
+    }
+});
+
 
 
 /** DELETE Event
