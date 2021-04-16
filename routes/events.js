@@ -58,13 +58,20 @@ router.get('/search',  async function(req, res, next) {
     if(req.query.category){
         additionalFilters["categoria"] = { $in: req.query.category}
     }
+
     if(req.query.date_to){
+        const dataFine = new Date(req.query.date_to)
+        if(isNaN(dataFine)) return next(createError(401, "Invalid date format"))
+
         additionalFilters["data"] = {};
-        additionalFilters["data"]["$lte"] = new Date(req.query.date_to) 
+        additionalFilters["data"]["$lte"] = dataFine 
     }
     if(req.query.date_from){
+        const dataInizio = new Date(req.query.date_from)
+        if(isNaN(dataInizio)) return next(createError(401, "Invalid date format"))
+
         if (!additionalFilters["data"]) additionalFilters["data"] = {};
-        additionalFilters["data"]["$gte"] = new Date(req.query.date_from)
+        additionalFilters["data"]["$gte"] = dataInizio
     }
 
     console.log(additionalFilters)
@@ -73,10 +80,12 @@ router.get('/search',  async function(req, res, next) {
         $match:additionalFilters
     })
         
-
-    const eventi = await query.exec()
-        
-    res.send(eventi)
+    try {
+        const eventi = await query.exec()
+        res.send(eventi)
+    } catch (error) {
+        next(createError(500, error))
+    }        
 });
 
 
