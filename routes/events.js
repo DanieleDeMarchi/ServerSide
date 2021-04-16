@@ -1,5 +1,6 @@
 var express = require('express');
 const Event = require('../models/Event')
+var createError = require('http-errors');
 
 const auth = require('../middleware/auth')
 var router = express.Router();
@@ -18,18 +19,83 @@ router.get('/eventList',  async function(req, res, next) {
 });
 
 
+
+/* SEARCH */
+/* url/events/search?title=titoloRicercato&
+         category[]=categoria+1&
+         category[]=categoria2+2&
+         date_from=isoTimestamp&
+         date_to=isoTimestamp&
+         comune=comune 
+*
+*/
+
+router.get('/search',  async function(req, res, next) {
+    console.log(req.query)
+
+    if(!req.query.title){
+        return next(createError(401));
+    }
+
+    const query = Event.aggregate([{
+        $search:{
+            text: {
+                query: req.query.title,
+                path: ['titoloEvento', 'descrizione'],
+                fuzzy: {
+                    "maxEdits": 2,
+                    "maxExpansions": 100,
+                }
+            }
+        }        
+    }])
+
+    additionalFilters = {}
+
+    if(req.query.comune){
+        additionalFilters["comune"] = req.query.comune
+    }
+    if(req.query.category){
+        additionalFilters["categoria"] = { $in: req.query.category}
+    }
+    if(req.query.date_to){
+        additionalFilters["data"] = {};
+        additionalFilters["data"]["$lte"] = new Date(req.query.date_to) 
+    }
+    if(req.query.date_from){
+        if (!additionalFilters["data"]) additionalFilters["data"] = {};
+        additionalFilters["data"]["$gte"] = new Date(req.query.date_from)
+    }
+
+    console.log(additionalFilters)
+
+    query.append({
+        $match:additionalFilters
+    })
+        
+
+    const eventi = await query.exec()
+        
+    res.send(eventi)
+});
+
+
+
+
 /** GET lista tutti eventi, eventualmente filtrati per comune
 * Non necessario login
-*/
+*
+* indirizzoheroku/events/eventList/5?per_page=10 
+* Server side pagination */
 router.get('/eventList/:page',  async function(req, res, next) {
     const per_page = parseInt (req.query.per_page ? req.query.per_page : 10 );
     const page = req.params.page || 1; // Page
-
+    
     try {
         const eventi = await Event.find()
-            .skip((per_page * page) - per_page)
-            .limit(per_page);
-
+        .skip((per_page * page) - per_page)
+        .limit(per_page);
+        
         res.send(eventi)
     }
     catch (e) {
@@ -64,7 +130,6 @@ router.get('/:eventId', async function(req, res, next) {
 *  Solo utente "organizzazione" (vincolo tolto per il momento)
 */
 router.post('/', async function(req, res, next) {
-    
     /*
     if(req.user.ruolo != "organizzatore" ){
         res.status(401).send({error: 'Utente non organizzatore'})
@@ -93,7 +158,7 @@ router.post('/', async function(req, res, next) {
     
     
     console.log(evento)
-
+    
     try {
         await evento.save()
         res.status(201).send(evento)
