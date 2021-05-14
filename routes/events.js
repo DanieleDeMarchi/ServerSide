@@ -1,5 +1,6 @@
 var express = require('express');
-const Event = require('../models/Event')
+const Event = require('../models/Event');
+const User = require('../models/User')
 var createError = require('http-errors');
 
 const auth = require('../middleware/auth')
@@ -33,8 +34,10 @@ router.get('/eventList',  async function(req, res, next) {
 router.get('/search',  async function(req, res, next) {
     console.log(req.query)
 
+    
+
     if(!req.query.title){
-        return next(createError(401));
+        return next(createError(400));
     }
 
     const query = Event.aggregate([{
@@ -52,9 +55,7 @@ router.get('/search',  async function(req, res, next) {
 
     additionalFilters = {}
 
-    if(req.query.comune){
-        additionalFilters["comune"] = req.query.comune
-    }
+
     if(req.query.category){
         additionalFilters["categoria"] = { $in: req.query.category}
     }
@@ -89,6 +90,71 @@ router.get('/search',  async function(req, res, next) {
 });
 
 
+router.get('/filterSearch', auth, async function(req, res, next) {
+    console.log(req.query)
+
+    let user = await User.findOne({ uid: req.user.uid }).populate('comuneDiResidenza').populate('comuniDiInteresse')
+
+    let comuniUtente = user.comuneDiResidenza ? [user.comuneDiResidenza.nomeComune] : []
+
+    user.comuniDiInteresse.forEach(comune => {
+        comuniUtente.push(comune.nomeComune)
+    });
+
+    console.log("comuni utente: ", comuniUtente)
+    const query = Event.aggregate([])
+    if(req.query.title){
+        query.append({
+            $search:{
+                text: {
+                    query: req.query.title,
+                    path: ['titoloEvento', 'descrizione'],
+                    fuzzy: {
+                        "maxEdits": 2,
+                        "maxExpansions": 100,
+                    }
+                }
+            }        
+        })
+    }
+
+    additionalFilters = {}
+
+    if(comuniUtente){
+        additionalFilters["comune"] = { $in: comuniUtente}
+    }
+    if(req.query.category){
+        additionalFilters["categoria"] = { $in: req.query.category}
+    }
+
+    if(req.query.date_to){
+        const dataFine = new Date(req.query.date_to)
+        if(isNaN(dataFine)) return next(createError(401, "Invalid date format"))
+
+        additionalFilters["data"] = {};
+        additionalFilters["data"]["$lte"] = dataFine 
+    }
+    if(req.query.date_from){
+        const dataInizio = new Date(req.query.date_from)
+        if(isNaN(dataInizio)) return next(createError(401, "Invalid date format"))
+
+        if (!additionalFilters["data"]) additionalFilters["data"] = {};
+        additionalFilters["data"]["$gte"] = dataInizio
+    }
+
+    console.log(additionalFilters)
+
+    query.append({
+        $match:additionalFilters
+    })
+        
+    try {
+        const eventi = await query.exec()
+        res.send(eventi)
+    } catch (error) {
+        next(createError(500, error))
+    }        
+});
 
 
 /** GET lista tutti eventi, eventualmente filtrati per comune
