@@ -124,7 +124,13 @@ router.get('/filterSearch', auth, async function(req, res, next) {
         additionalFilters["comune"] = { $in: comuniUtente}
     }
     if(req.query.category){
-        additionalFilters["categoria"] = { $in: req.query.category}
+        let categorie
+        if(typeof req.query.category === 'string'){
+            categorie = [req.query.category]
+        }else{
+            categorie = req.query.category
+        }
+        additionalFilters["categoria"] = { $in: categorie}
     }
 
     if(req.query.date_to){

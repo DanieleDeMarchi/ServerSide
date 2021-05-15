@@ -14,6 +14,7 @@ const router = express.Router()
 router.get('/me', auth, async(req, res) => {
     // View logged in user profile
     let user = await User.findOne({ uid: req.user.uid }).populate('comuneDiResidenza').populate('comuniDiInteresse')
+
     if(!user){
         user = new User({
             "uid": req.user.uid,
@@ -25,11 +26,12 @@ router.get('/me', auth, async(req, res) => {
         try {
             await user.save()
         } catch (err) {
+            //console.log(err)
             if (err.name === 'MongoError' && err.code === 11000) {
-                // Duplicate targa
+                // Duplicate 
                 return res.status(409).send({ error: 'already exist!' });
             }
-            res.status(400).send(err)
+            return res.status(400).send(err)
         }        
     }
 
@@ -58,11 +60,12 @@ router.delete('/me/comuni', auth, async(req, res) => {
     try {
         await user.save()
     } catch (err) {
+        console.log(err)
         if (err.name === 'MongoError' && err.code === 11000) {
             // Duplicate targa
             return res.status(409).send({ error: 'already exist!' });
         }
-        res.status(400).send(err)
+        return res.status(400).send(err)
     } 
 
     res.send(user)
@@ -73,6 +76,7 @@ router.patch('/me/comuni', auth, async(req, res) => {
     let user = await User.findOne({ uid: req.user.uid })    
     const comuneAggiungi = await Comune.findOne({ nomeComune: req.body.comuneAggiungi })
     
+    console.log(req.body)
     if(!comuneAggiungi){
         return res.status(404).send("errore comune non trovato")
     }
@@ -106,7 +110,8 @@ router.patch('/me/comuni', auth, async(req, res) => {
             // Duplicate targa
             return res.status(409).send({ error: 'already exist!' });
         }
-        res.status(400).send(err)
+        console.log(err)
+        return res.status(400).send(err)
     }      
 
     
