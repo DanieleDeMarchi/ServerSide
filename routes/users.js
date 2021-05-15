@@ -73,10 +73,14 @@ router.delete('/me/comuni', auth, async(req, res) => {
 
 /*PATCH comune utente*/
 router.patch('/me/comuni', auth, async(req, res) => {
+
+    console.log("Richiesta modifica comuni utente")
+
     let user = await User.findOne({ uid: req.user.uid })    
     const comuneAggiungi = await Comune.findOne({ nomeComune: req.body.comuneAggiungi })
     
     console.log(req.body)
+
     if(!comuneAggiungi){
         return res.status(404).send("errore comune non trovato")
     }
@@ -106,11 +110,11 @@ router.patch('/me/comuni', auth, async(req, res) => {
     try {
         await user.save()
     } catch (err) {
+        console.log(err)
         if (err.name === 'MongoError' && err.code === 11000) {
             // Duplicate targa
             return res.status(409).send({ error: 'already exist!' });
         }
-        console.log(err)
         return res.status(400).send(err)
     }      
 
