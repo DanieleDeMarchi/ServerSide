@@ -20,6 +20,9 @@ app.use('/users', usersRouter);
 app.use('/projects', projectRouter);
 app.use('/comuni', comuniRouter);
 
+app.use('/test', function(req, res, next) {
+    res.send("OK")
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
