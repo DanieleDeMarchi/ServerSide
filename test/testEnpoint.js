@@ -39,7 +39,7 @@ describe('Civic points API, Events Router', () => {
             })
         })
     })
-   
+
     describe("GET /test", ()=>{
         it("Dovrei ottenere una risposta 200, per test OK CI", (done)=>{
             chai.request(server)
@@ -62,6 +62,7 @@ describe('Civic points API, Events Router', () => {
             })
         })
     })
+
 
     /**
     * Test GET events by id route
