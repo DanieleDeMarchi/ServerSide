@@ -21,7 +21,7 @@ app.use('/projects', projectRouter);
 app.use('/comuni', comuniRouter);
 
 app.use('/test', function(req, res, next) {
-    res.send("OK")
+    res.send("This is the service_layer branch")
 });
 
 // catch 404 and forward to error handler
