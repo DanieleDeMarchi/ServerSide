@@ -41,6 +41,7 @@ describe('Civic points API, Events Router', () => {
     })
 
 
+
     /**
     * Test GET events by id route
     */
