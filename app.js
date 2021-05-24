@@ -24,6 +24,11 @@ app.use('/test', function(req, res, next) {
     res.send("OK")
 });
 
+
+app.use('/test_old', function(req, res, next) {
+    res.send("vecchia funzionalità funzionante")
+});
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
     next(createError(404));
