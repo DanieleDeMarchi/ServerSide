@@ -40,7 +40,29 @@ describe('Civic points API, Events Router', () => {
         })
     })
    
-    
+    describe("GET /test", ()=>{
+        it("Dovrei ottenere una risposta 200, per test OK CI", (done)=>{
+            chai.request(server)
+            .get("/test") //URL errata per testare 404
+            .end((err, response) => {
+                response.should.have.status(200);
+                done();
+            })
+        })
+    })
+
+
+    describe("GET /test_old", ()=>{
+        it("Dovrei ottenere una risposta 200, per test fail CI", (done)=>{
+            chai.request(server)
+            .get("/test_old") //URL errata per testare 404
+            .end((err, response) => {
+                response.should.have.status(200);
+                done();
+            })
+        })
+    })
+
     /**
     * Test GET events by id route
     */
