@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "test": "nodemon ./server/bin/www"
+    "start:dev": "nodemon ./server/bin/www",
+    "test": "mocha --exit"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -20,6 +21,9 @@
     "validator": "^13.5.2"
   },
   "devDependencies": {
+    "chai": "^4.3.4",
+    "chai-http": "^4.3.0",
+    "mocha": "^8.4.0",
     "nodemon": "^2.0.6"
   }
 }

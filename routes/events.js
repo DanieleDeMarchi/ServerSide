@@ -2,6 +2,7 @@ var express = require('express');
 const Event = require('../models/Event');
 const User = require('../models/User')
 var createError = require('http-errors');
+var mongoose = require('mongoose');
 
 const auth = require('../middleware/auth')
 var router = express.Router();
@@ -153,6 +154,8 @@ router.get('/filterSearch', auth, async function(req, res, next) {
     query.append({
         $match:additionalFilters
     })
+
+    console.log("Query object:\n", query)
         
     try {
         const eventi = await query.exec()
@@ -192,7 +195,9 @@ router.get('/eventList/:page',  async function(req, res, next) {
 */
 router.get('/:eventId', async function(req, res, next) {
     const _id = req.params.eventId
-    
+    if(!mongoose.isValidObjectId(_id)){
+        return next()
+    }
     try {
         const evento = await Event.findOne({ _id })    
         if (!evento) {
@@ -280,15 +285,5 @@ router.delete('/:eventId', async function(req, res, next) {
         } 
     });
 });
-
-
-const toDate = (dateStr) => {
-    const [year, month, day] = dateStr.split("-")
-    console.log(year, month - 1, day)
-    const date = new Date(year, month - 1 , day)
-    const userTimezoneOffset = date.getTimezoneOffset() * 60000;
-    return new Date(date - userTimezoneOffset);
-}
-
 
 module.exports = router;
