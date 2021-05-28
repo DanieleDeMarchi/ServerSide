@@ -35,6 +35,10 @@ router.get('/me', auth, async(req, res) => {
         }        
     }
 
+    if(user.ruolo == 'sindaco'){
+        await user.populate('comuneAmministrato').execPopulate()
+    }
+
     user.comuniDiInteresse.sort((a,b) => (a.nomeComune>b.nomeComune) ? 1 : ((b.nomeComune > a.nomeComune) ? -1 : 0))
 
     res.status(200).send(user)

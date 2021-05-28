@@ -1,0 +1,31 @@
+<% let listaRichieste = JSON.parse(data.listaRichieste)%>
+<% let listaSindaci = JSON.parse(data.listaSindaci)%>
+
+<!DOCTYPE html>
+<html>
+    <%- include('partials/headers/header'); %>
+    
+    <script>
+        const serverAddress = '<%= process.env.SERVER_ADDRESS %>'
+
+    </script>
+    <div id="content">
+
+        <!-- PARTE CENTRALE DELLA PAGINA-->        
+        <div id="insideContent" class="container-fluid">
+            <h1>Gestione Sindaci</h1>
+            
+            <hr>
+            <%- include('partials/bootstrapAlerts'); %>
+            <%- include('partials/requestSindaciTable', {listaRichieste}); %>
+            <%- include('partials/listSindaciTable', {listaSindaci}); %>            
+            
+
+        </div>
+   
+        
+    <div>
+
+    <%- include('partials/footers/footer' ); %>
+
+<html>

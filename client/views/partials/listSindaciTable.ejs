@@ -1,0 +1,85 @@
+<div>
+    
+    <h2>Lista Sindaci</h2>
+    
+    <% if (listaSindaci.length === 0){ %>
+        <h5>Nessuna sindaco</h5>
+    <%}else{%>
+            
+        <!-- Tabella Auto-->
+        <div class="tableContainer">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col">Comune</th>
+                        <th scope="col">Nome</th>
+                        <th scope="col">Cognome</th>
+                        <th scope="col">Revoca ruolo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <% listaSindaci.forEach(sindaco => { %> 
+                        
+                        <tr class="datiComune" data-nomeComune="<%- sindaco.nomeComune  %>">
+                            <td><%- sindaco.nomeComune %></td>
+                            <td><%- sindaco.sindaco.nomeSindaco %></td>
+                            <td><%- sindaco.sindaco.cognomeSindaco %></td>
+                            <td>
+                                <button type="button" class="btnRevoca btn btn-outline-danger btn-block">
+                                    Revoca
+                                </button>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+            
+    <%}%>
+</div>
+
+
+<script>
+      
+    const listSindaci = document.getElementsByClassName("datiComune")
+    Array.from(listSindaci).forEach(row =>{
+        const comune = row.getAttribute('data-nomeComune')
+        const buttonRevoca = row.querySelector(".btnRevoca")
+        
+        buttonRevoca.addEventListener("click", function(){
+            revocaRuoloSindaco(comune)
+        });
+
+    })
+
+    function revocaRuoloSindaco(nomeComune){        
+        const data = {
+            comune: nomeComune,
+        }
+
+        return fetch(`http://${serverAddress}/gestione_ruoli/revocaRuoloSindaco`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        }).then(response=> {
+            if(response.ok){
+                return response.json()
+            }else{
+                throw new Error(`${response.status} ${response.statusText}`)
+            }  
+        }).then(data => {
+            successAlert("Revocato ruolo sindaco")
+            setTimeout(function() {
+                document.location.reload()
+            }, 3000);
+        }).catch(error => {
+            errorAlert(error)      
+            console.log(error)
+        })    
+    }
+
+
+</script>

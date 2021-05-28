@@ -23,7 +23,32 @@ const userSchema = mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Comune'
         }
-    ]
+    ],
+    comuneAmministrato:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Comune',
+        required:[
+            function(){return this.ruolo == 'sindaco'},
+            'Ruolo sindaco necessario per impostare comuneAmministrato'
+        ] 
+    },
+    nomeSindaco:{
+        type: String,
+        required:[
+            function(){return this.ruolo == 'sindaco'},
+            'Ruolo sindaco necessario per impostare nomeSindaco'
+        ]
+    },
+    cognomeSindaco:{
+        type: String,
+        required:[
+            function(){return this.ruolo == 'sindaco'},
+            'Ruolo sindaco necessario per impostare cognomeSindaco'
+        ]
+    },
+    indirizzo:{
+        type: String
+    }
 
 })
 

@@ -1,0 +1,144 @@
+<div>
+    
+    <h2>Richieste ruolo Sindaco</h2>
+    
+    <% listaRichieste = listaRichieste.filter(richiesta => richiesta.statoRichiesta == 'PENDING') %> 
+    <% if (listaRichieste.length === 0){ %>
+        <h5>Nessuna richiesta per diventare sindaco</h5>
+    <%}else{%>
+            
+        <!-- Tabella Auto-->
+        <div class="tableContainer">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col">Comune</th>
+                        <th scope="col">Nome Richiedente</th>
+                        <th scope="col">Cognome Richiedente</th>
+                        <th scope="col">Accetta/rifiuta</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <% listaRichieste.forEach(richiesta => { %> 
+                        
+                        <tr class="datiRichiesta" data-idRichiesta="<%- richiesta._id  %>">
+                            <td><%- richiesta.comuneDaAmministrare.nomeComune %></td>
+                            <td><%- richiesta.nomeSindaco %></td>
+                            <td><%- richiesta.cognomeSindaco %></td>
+                            <td class="statoRichiesta"><%- richiesta.statoRichiesta %></td>
+                            <td>
+                                <button type="button" class="btnAccetta btn btn-block btn-outline-success">
+                                    Accetta
+                                </button>
+                                <button type="button" class="btnRifiuta btn btn-outline-primary btn-block">
+                                    Rifiuta
+                                </button>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+            
+    <%}%>
+</div>
+
+<hr>
+
+<script>
+    
+
+    const listRichieste = document.getElementsByClassName("datiRichiesta")
+    Array.from(listRichieste).forEach(row =>{
+        const idRichiesta = row.getAttribute('data-idRichiesta')
+        const buttonAccetta = row.querySelector(".btnAccetta")
+        const buttonRifiuta = row.querySelector(".btnRifiuta")
+        
+        buttonRifiuta.addEventListener("click", function(){
+            rifiutaRichiesta(idRichiesta)
+        });
+        buttonAccetta.addEventListener("click", function(){
+            accettaRichiesta(idRichiesta)
+        });
+
+    })
+
+    function rifiutaRichiesta(idRichiesta){        
+        const data = {
+            requestId: idRichiesta,
+            response: 'REJECT'
+        }
+
+        return fetch(`http://${serverAddress}/gestione_ruoli/acceptRejectRuolo`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        }).then(response=> {
+            if(response.ok){
+                return response.json()
+            }else{
+                throw new Error(`${response.status} ${response.statusText}`)
+            }  
+        }).then(data => {
+            rifiutaRichiestaOk(data)
+            successAlert("Rifiutata richiesta sindaco")
+        }).catch(error => {
+            errorAlert(error)      
+            console.log(error)
+        })    
+    }
+
+
+    function rifiutaRichiestaOk(data){
+        idRichiesta = data._id
+        const rigaTabella = document.querySelector(`tr[data-idRichiesta="${idRichiesta}"]`);
+
+        statoRichiesta = rigaTabella.querySelector(".statoRichiesta")
+        statoRichiesta.innerHTML = "Respinta"
+    }
+
+
+
+    function accettaRichiesta(idRichiesta){        
+        const data = {
+            requestId: idRichiesta,
+            response: 'ACCEPT'
+        }
+
+        return fetch(`http://${serverAddress}/gestione_ruoli/acceptRejectRuolo`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        }).then(response=> {
+            if(response.ok){
+                return response.json()
+            }else{
+                throw new Error(`${response.status} ${response.statusText}`)
+            }  
+        }).then(data => {
+            accettaRichiestaOk(data)
+            successAlert("Accettata richiesta sindaco")
+            setTimeout(function() {
+                document.location.reload()
+            }, 3000);
+        }).catch(error => {
+            errorAlert(error)      
+            console.log(error)
+        })    
+    }
+
+
+    function accettaRichiestaOk(data){
+        idRichiesta = data._id
+        const rigaTabella = document.querySelector(`tr[data-idRichiesta="${idRichiesta}"]`);
+
+        statoRichiesta = rigaTabella.querySelector(".statoRichiesta")
+        statoRichiesta.innerHTML = "Accettata"
+    }
+    
+</script>
