@@ -11,7 +11,7 @@ require('dotenv').config();
  router.get('/pannelloAmministrazioneSindaci', async(req, res, next)  => {
 
     const options = {
-        url: `http://${process.env.SERVER_ADDRESS}/gestione_ruoli/getAll`,
+        url: `${process.env.SERVER_ADDRESS}/gestione_ruoli/getAll`,
     }
 
     
@@ -35,7 +35,7 @@ require('dotenv').config();
     promise.then(value => {
         const listaRichieste = value
 
-        options.url = `http://${process.env.SERVER_ADDRESS}/gestione_ruoli/listaSindaci`
+        options.url = `${process.env.SERVER_ADDRESS}/gestione_ruoli/listaSindaci`
 
         let secondPromise = new Promise((resolve, reject) => {
             request.get(options, 

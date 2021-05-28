@@ -70,7 +70,7 @@
             response: 'REJECT'
         }
 
-        return fetch(`http://${serverAddress}/gestione_ruoli/acceptRejectRuolo`, {
+        return fetch(`${serverAddress}/gestione_ruoli/acceptRejectRuolo`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
@@ -108,7 +108,7 @@
             response: 'ACCEPT'
         }
 
-        return fetch(`http://${serverAddress}/gestione_ruoli/acceptRejectRuolo`, {
+        return fetch(`${serverAddress}/gestione_ruoli/acceptRejectRuolo`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',

@@ -58,7 +58,7 @@
             comune: nomeComune,
         }
 
-        return fetch(`http://${serverAddress}/gestione_ruoli/revocaRuoloSindaco`, {
+        return fetch(`${serverAddress}/gestione_ruoli/revocaRuoloSindaco`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
