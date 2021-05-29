@@ -48,7 +48,12 @@ const userSchema = mongoose.Schema({
     },
     indirizzo:{
         type: String
-    }
+    },
+    deviceToken:[
+        {
+            type: String
+        }
+    ]
 
 })
 
