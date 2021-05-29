@@ -4,6 +4,8 @@ const Comune = require('../models/Comune')
 const RichiestaRuolo = require('../models/RichiestaRuolo')
 const auth = require('../middleware/auth')
 const authFacoltativa = require('../middleware/authNonObbligatoria')
+const firebase = require("../db/firebase");
+
 const router = express.Router()
 
 /************
@@ -107,10 +109,11 @@ router.patch('/acceptRejectRuolo', async(req, res, next) => {
         return next(createError(401, "richiesta ruolo non trovata"))
     }
 
+    const user = await User.findOne({ _id: richiestaRuolo.richiedente })
+
     if(req.body.response == "ACCEPT"){
         richiestaRuolo.statoRichiesta = 'ACCEPTED'
 
-        const user = await User.findOne({ _id: richiestaRuolo.richiedente })
         const comune = await Comune.findOne({ _id: richiestaRuolo.comuneDaAmministrare })
 
         user.ruolo = 'sindaco'
@@ -151,14 +154,24 @@ router.patch('/acceptRejectRuolo', async(req, res, next) => {
         return res.status(400).send(err)
     }
 
-
+    await notifyUser(user, req.body.response)
     res.send(richiestaRuolo)
 
 })
 
 
 
+async function notifyUser(userObject, esitoRichiesta){
+    const message = {
+        notification: {
+          title: esitoRichiesta == 'ACCEPT' ? 'Richiesta sindaco confermata' : 'Richiesta sindaco rifiutata',
+          body: esitoRichiesta == 'ACCEPT' ? 'La tua richiesta per diventare sindaco è stata accettata' : 'La tua richiesta per diventare sindaco è stata rifiutata',
+        },
+        tokens: userObject.deviceToken
+      };
 
+    await firebase.messaging().sendMulticast(message)
+}
 
 
 

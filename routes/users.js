@@ -177,6 +177,7 @@ router.get('/me/categorieDisponibili', auth, async(req, res) => {
 router.post('/registerDevice', auth, async(req, res, next) => {
     let user = await User.findOne({ uid: req.user.uid })
 
+    console.log("Device token: " + req.body.deviceToken)
     if(!user){
         user = new User({
             "uid": req.user.uid,
@@ -198,13 +199,20 @@ router.post('/registerDevice', auth, async(req, res, next) => {
     }
 
     if(!user.deviceToken){
+        console.log("user non aveva alcun token")
         user.deviceToken = [req.body.deviceToken]
     }else{
-        user.deviceToken.push(req.body.deviceToken)
+        console.log("user  aveva già dei token")
+        if(!user.deviceToken.includes(req.body.deviceToken)){
+            user.deviceToken.push(req.body.deviceToken)
+        }        
     }
+
+    console.log("User object before save: " + user)
 
     try {
         await user.save()
+        console.log("user object saved")
     } catch (err) {
         if (err.name === 'MongoError' && err.code === 11000) {
             // Duplicate targa
@@ -213,6 +221,7 @@ router.post('/registerDevice', auth, async(req, res, next) => {
         res.status(400).send(err)
     } 
 
+    console.log("User object after save: " + user)
     res.send(user.deviceToken)
 })
 
