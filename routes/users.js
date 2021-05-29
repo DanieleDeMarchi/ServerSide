@@ -173,4 +173,47 @@ router.get('/me/categorieDisponibili', auth, async(req, res) => {
     res.status(200).send({"categorieDiInteresse" : categorieDiInteresse})
 });
 
+
+router.post('/registerDevice', auth, async(req, res, next) => {
+    let user = await User.findOne({ uid: req.user.uid })
+
+    if(!user){
+        user = new User({
+            "uid": req.user.uid,
+            "ruolo": "cittadino",
+            "comuneDiResidenza": null,
+            "comuniDiInteresse": []
+        })
+
+        try {
+            await user.save()
+        } catch (err) {
+            //console.log(err)
+            if (err.name === 'MongoError' && err.code === 11000) {
+                // Duplicate 
+                return res.status(409).send({ error: 'already exist!' });
+            }
+            return res.status(400).send(err)
+        }        
+    }
+
+    if(!user.deviceToken){
+        user.deviceToken = [req.body.deviceToken]
+    }else{
+        user.deviceToken.push(req.body.deviceToken)
+    }
+
+    try {
+        await user.save()
+    } catch (err) {
+        if (err.name === 'MongoError' && err.code === 11000) {
+            // Duplicate targa
+            return res.status(409).send({ error: 'already exist!' });
+        }
+        res.status(400).send(err)
+    } 
+
+    res.send(user.deviceToken)
+})
+
 module.exports = router;

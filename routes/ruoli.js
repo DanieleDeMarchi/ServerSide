@@ -56,6 +56,7 @@ router.get('/listaSindaci', async(req, res, next)  => {
     if(!comuneDaAmministrare){
         comuneDaAmministrare = new Comune({
             "nomeComune": req.body.comune,
+            "enabled": true
         })
     
     }
