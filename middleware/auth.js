@@ -6,11 +6,11 @@ const firebase = require("../db/firebase");
 function authMiddleware(req, res, next) {
     const headerToken = req.headers.authorization;
     if (!headerToken) {
-        return res.send({ message: "No token provided" }).status(401);
+        return res.status(401).send({ message: "No token provided" });
     }
     
     if (headerToken && headerToken.split(" ")[0] !== "Bearer") {
-        res.send({ message: "Invalid token" }).status(401);
+        res.status(401).send({ message: "Invalid token" });
     }
     
     const token = headerToken.split(" ")[1];
@@ -25,7 +25,7 @@ function authMiddleware(req, res, next) {
             req.user = decodedToken
             next()
         })
-        .catch(() => res.send({ message: "Could not authorize" }).status(403));
+        .catch(() => res.status(403).send({ message: "Could not authorize" }));
     
    
 }
