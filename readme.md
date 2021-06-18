@@ -71,17 +71,18 @@ Per l'architettura dell'applicazione fare riferimento al manuale tecnico
 
 ### Struttura file/cartelle
 
+```
 .
-├── app.js &nbsp;&nbsp;&nbsp; // express configuration file
+├── app.js          // express configuration file
 ├── bin
-│   └── www &nbsp;&nbsp;&nbsp; // entry point application
-├── db &nbsp;&nbsp;&nbsp; // file configurazione e connessione DB
+│   └── www         // entry point application
+├── db              // file configurazione e connessione DB
 │   ├── db.js
 │   └── firebase.js
-├── middleware &nbsp;&nbsp;&nbsp; // Express middlewares
+├── middleware      // Express middlewares
 │   ├── auth.js
 │   └── authNonObbligatoria.js
-├── models &nbsp;&nbsp;&nbsp; // moongose models (DAO)
+├── models          // moongose models (DAO)
 │   ├── Comune.js
 │   ├── Event.js
 │   ├── Project.js
@@ -89,14 +90,15 @@ Per l'architettura dell'applicazione fare riferimento al manuale tecnico
 │   └── User.js
 ├── package.json
 ├── readme.md
-├── routes &nbsp;&nbsp;&nbsp; // Express routers
+├── routes          // Express routers
 │   ├── comuni.js
 │   ├── events.js
 │   ├── projects.js
 │   ├── ruoli.js
 │   └── users.js
-└── test &nbsp;&nbsp;&nbsp; // Tests folder
+└── test            // Tests folder
    └── testEnpoint.js
+```
 
 #### Testing
 
