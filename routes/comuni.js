@@ -1,10 +1,15 @@
+/**
+ * Router gestione COMUNI
+ */
 var express = require('express');
 const Comune = require('../models/Comune')
 
 const auth = require('../middleware/auth')
 var router = express.Router();
 
-
+/**
+ * POST: crea un comune
+ */
 router.post('/', async function(req, res, next) {
 
     const comune = new Comune({

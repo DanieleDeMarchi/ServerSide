@@ -3,9 +3,10 @@ var express = require('express');
 var logger = require('morgan');
 const path = require('path')
 
-
+// require DataBasae
 require('./db/db');
 
+// require Router files
 var eventsRouter = require('./routes/events');
 var usersRouter = require('./routes/users');
 var projectRouter = require('./routes/projects');
@@ -25,6 +26,8 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+
+// set routers
 app.use('/events', eventsRouter);
 app.use('/users', usersRouter);
 app.use('/projects', projectRouter);

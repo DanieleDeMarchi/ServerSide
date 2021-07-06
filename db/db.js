@@ -1,3 +1,8 @@
+/**
+ * Connessione al Server MONGODB
+ * DEV'ESSERE PRESENTE LA CHIAVE DI CONNESSIONE NELLE VARIABILI D'AMBIENTE
+ */
+
 require('dotenv').config();
 const mongoose = require('mongoose');
 

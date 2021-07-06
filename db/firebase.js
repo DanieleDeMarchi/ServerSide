@@ -1,3 +1,8 @@
+/**
+ * Connessione ai servizi FIREBASE
+ * DEVONO ESSERE PRESENTE LE CHIAVI DI CONNESSIONE NELLE VARIABILI D'AMBIENTE
+ */
+
 const firebase = require("firebase-admin");
 require('dotenv').config();
 

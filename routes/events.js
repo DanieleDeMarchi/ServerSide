@@ -90,7 +90,16 @@ router.get('/search',  async function(req, res, next) {
     }        
 });
 
+/* SEARCH */
+/* url/events/filterSearch?title=titoloRicercato&
+         category[]=categoria+1&
+         category[]=categoria2+2&
+         date_from=isoTimestamp&
+         date_to=isoTimestamp&
 
+    Cerca in base ai comuni preferiti dell'utente
+*
+*/
 router.get('/filterSearch', auth, async function(req, res, next) {
     console.log(req.query)
 

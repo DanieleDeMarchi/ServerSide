@@ -1,5 +1,9 @@
 /*
+MIDDLEWARE per autenticazione
+
 auth-middleware.js
+Controlla l'authorization header
+Se Autorizzazione non corretta invia errore 403
 */
 const firebase = require("../db/firebase");
 

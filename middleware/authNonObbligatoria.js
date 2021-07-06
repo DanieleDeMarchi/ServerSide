@@ -1,5 +1,9 @@
 /*
+MIDDLEWARE per autenticazione
 auth-middleware.js
+Controlla l'authorization header
+Se non presente continua comunque l'esecuzione.
+Da usare quando la richiesta può essere fatta sia da utenti autenticati che non.
 */
 const firebase = require("../db/firebase");
 

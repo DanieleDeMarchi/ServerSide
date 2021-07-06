@@ -127,9 +127,10 @@ router.patch('/me/comuni', auth, async(req, res) => {
 });
 
 
-
+/**
+ * Ottieni le categorie degli eventi disponibili per i comuni interessati dall'utente
+ */
 router.get('/me/categorieDisponibili', auth, async(req, res) => {
-    // View logged in user profile
     let user = await User.findOne({ uid: req.user.uid }).populate('comuneDiResidenza').populate('comuniDiInteresse')
     if(!user){
         user = new User({
@@ -173,7 +174,10 @@ router.get('/me/categorieDisponibili', auth, async(req, res) => {
     res.status(200).send({"categorieDiInteresse" : categorieDiInteresse})
 });
 
-
+/**
+ * Registra il dispositivo utente con identificativo unico Firebase
+ * Usato per inviare notifiche push
+ */
 router.post('/registerDevice', auth, async(req, res, next) => {
     let user = await User.findOne({ uid: req.user.uid })
 

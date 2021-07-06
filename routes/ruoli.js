@@ -13,12 +13,18 @@ const router = express.Router()
  * 
  */
 
+/**
+ * GET all richieste ruolo pendenti
+ */
  router.get('/getAll', async(req, res, next)  => {
     const richiesteRuolo = await RichiestaRuolo.find().populate('richiedente').populate('comuneDaAmministrare')    
     res.send(richiesteRuolo)
 
 })
 
+/**
+ * GET lista utenti sindaco
+ */
 router.get('/listaSindaci', async(req, res, next)  => {
     const comuni = await Comune.find({sindaco: {$ne: null} }).populate('sindaco')
     res.send(comuni)
@@ -28,7 +34,9 @@ router.get('/listaSindaci', async(req, res, next)  => {
 
 
 
-
+/**
+ * POST effettua richiesta per upgrade ruolo
+ */
  router.post('/richiediRuoloSindaco', auth, async(req, res, next) => {
     // View logged in user profile
     let user = await User.findOne({ uid: req.user.uid })
@@ -101,7 +109,9 @@ router.get('/listaSindaci', async(req, res, next)  => {
 
 
 
-
+/**
+ * PATCH accetta/rifiuta richiesta upgrade ruolo
+ */
 router.patch('/acceptRejectRuolo', async(req, res, next) => {
     const richiestaRuolo = await RichiestaRuolo.findOne({ _id: req.body.requestId })
 
@@ -160,7 +170,10 @@ router.patch('/acceptRejectRuolo', async(req, res, next) => {
 })
 
 
-
+/**
+ * funzione per notificare l'utente dell'esito della richiesta di upgrade ruolo.
+ * Sfrutta firebase messaging per notifiche push
+ */
 async function notifyUser(userObject, esitoRichiesta){
     const message = {
         notification: {
@@ -174,7 +187,9 @@ async function notifyUser(userObject, esitoRichiesta){
 }
 
 
-
+/**
+ * PATCH revoca il ruolo di sindaco ad un utente
+ */
 router.patch('/revocaRuoloSindaco', authFacoltativa, async(req, res, next) => {
     
     if(req.body.comune){

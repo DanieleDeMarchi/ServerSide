@@ -5,11 +5,11 @@ const auth = require('../middleware/auth')
 var router = express.Router();
 
 /************
-* Router per gestione eventi
+* Router per gestione progetti civici
 * 
 */
 
-/** GET lista tutti eventi, eventualmente filtrati per comune
+/** GET lista tutti progetti civici, eventualmente filtrati per comune
 * Non necessario login
 */
 router.get('/projectsList',  async function(req, res, next) {
@@ -17,7 +17,9 @@ router.get('/projectsList',  async function(req, res, next) {
     res.send(progetti)
 });
 
-
+/**
+ * POST creazione progetto civico
+ */
 router.post('/', async function(req, res, next) {
     
 
